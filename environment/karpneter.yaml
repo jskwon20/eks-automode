@@ -1,0 +1,27 @@
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: system
+spec:
+  template:
+    spec:
+      nodeClassRef:
+        group: eks.amazonaws.com     # ✅ 필수! 누락되면 Invalid 발생
+        kind: NodeClass
+        name: default
+      requirements:
+      - key: eks.amazonaws.com/instance-family
+        operator: In
+        values: ["t3"]
+      - key: node.kubernetes.io/instance-type
+        operator: In
+        values: ["t3.small"]
+      - key: karpenter.sh/capacity-type
+        operator: In
+        values: ["on-demand"]
+      - key: kubernetes.io/arch
+        operator: In
+        values: ["amd64"]
+      - key: kubernetes.io/os
+        operator: In
+        values: ["linux"]
