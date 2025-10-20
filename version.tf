@@ -1,4 +1,3 @@
-
 terraform {
   required_providers {
     aws = {
@@ -51,7 +50,6 @@ module "iam" {
   source  = "terraform-aws-modules/iam/aws"
   version = "~> 5.0"
 }
-
 
 provider "kubernetes" {
   host                   = module.eks.cluster_endpoint
