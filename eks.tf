@@ -8,8 +8,8 @@ module "eks" {
 
   # EKS Auto Mode 활성화
   cluster_compute_config = {
-    enabled    = true
-    node_pools = ["general-purpose"]
+    enabled       = true
+    node_pools    = ["general-purpose"]
     node_role_arn = aws_iam_role.eks_auto_mode_node_role.arn
   }
 
