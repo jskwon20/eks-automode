@@ -75,60 +75,8 @@ resource "aws_iam_role_policy_attachment" "eks_auto_mode_node_role_policies" {
   role       = aws_iam_role.eks_auto_mode_node_role.name
 }
 
-# CoreDNS
-resource "aws_eks_addon" "coredns" {
-  cluster_name                = module.eks.cluster_name
-  addon_name                  = "coredns"
-  addon_version               = data.aws_eks_addon_version.coredns.version
-  resolve_conflicts_on_create = "OVERWRITE"
-  resolve_conflicts_on_update = "OVERWRITE"
-
-  depends_on = [
-    module.eks
-  ]
-}
-
-# EKS-Addon
-locals {
-  eks_addons = [
-    "kube-proxy",
-    "vpc-cni",
-    "metrics-server",
-    "aws-ebs-csi-driver",
-    "eks-pod-identity-agent"
-  ]
-}
-
-data "aws_eks_addon_version" "this" {
-  for_each = toset(local.eks_addons)
-
-  addon_name         = each.key
-  kubernetes_version = module.eks.cluster_version
-}
-
-resource "aws_eks_addon" "this" {
-  for_each = toset(local.eks_addons)
-
-  cluster_name                = module.eks.cluster_name
-  addon_name                  = each.key
-  addon_version               = data.aws_eks_addon_version.this[each.key].version
-  resolve_conflicts_on_create = "OVERWRITE"
-  resolve_conflicts_on_update = "OVERWRITE"
-
-  depends_on = [
-    module.eks
-  ]
-
-  timeouts {
-    create = "2m"
-  }
-}
-
-# EBS CSI 드라이버를 사용하는 스토리지 클래스
+# EBS CSI 드라이버를 사용하는 스토리지 클래스 (Auto Mode에서 자동 설치됨)
 resource "kubernetes_storage_class" "ebs_sc" {
-  # EBS CSI 드라이버가 EKS Addon을 통해서 생성될 경우
-  count = contains(local.eks_addons, "aws-ebs-csi-driver") ? 1 : 0
-
   metadata {
     name = "ebs-sc"
     annotations = {
@@ -141,12 +89,12 @@ resource "kubernetes_storage_class" "ebs_sc" {
     type      = "gp3"
     encrypted = "true"
   }
+
+  depends_on = [module.eks]
 }
 
 # 기본값으로 생성된 스토리지 클래스 해제
 resource "kubernetes_annotations" "default_storageclass" {
-  count = contains(local.eks_addons, "aws-ebs-csi-driver") ? 1 : 0
-
   api_version = "storage.k8s.io/v1"
   kind        = "StorageClass"
   force       = "true"
