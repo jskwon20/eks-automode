@@ -15,16 +15,16 @@ variable "aws_load_balancer_controller_chart_version" {
 }
 
 variable "external_dns_chart_version" {
-  description = "Kubernetes ExternalDNS Helm 차트 버전"
+  description = "ExternalDNS Helm 차트 버전"
+  type        = string
+}
+
+variable "metrics_server_chart_version" {
+  description = "Metrics Server Helm 차트 버전"
   type        = string
 }
 
 variable "ingress_nginx_chart_version" {
-  description = "Ingess-nginx Controller Helm 차트 버전 "
-  type        = string
-}
-
-variable "bastion_cidr" {
-  description = "Bastion host CIDR"
+  description = "Ingress NGINX Helm 차트 버전"
   type        = string
 }

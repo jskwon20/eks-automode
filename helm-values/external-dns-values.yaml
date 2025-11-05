@@ -1,0 +1,15 @@
+serviceAccount:
+  create: true
+  annotations:
+    eks.amazonaws.com/role-arn: ${iam_role_arn}
+
+txtOwnerId: ${cluster_name}
+policy: sync
+sources:
+  - ingress
+provider: aws
+aws:
+  region: ap-northeast-2
+  zoneType: public
+domainFilters:
+  - gsitm-test.com
